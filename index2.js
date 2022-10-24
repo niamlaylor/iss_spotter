@@ -5,9 +5,9 @@ const printPassTimes = require('./printPassTimes'); // Function that's just for 
 together, then passes the result into the printPassTimes function to be printed.
 */
 nextISSTimesForMyLocation()
-  .then((passTimes) => {
+  .then((passTimes) => { // If the nextISSTimesForMyLocation function returns a body, then we want to pass it into the print function to console.log them all.
     printPassTimes(passTimes);
   })
-  .catch((error) => {
+  .catch((error) => { // This scenario captures an error at any point along the chain of promises and logs the error message.
     console.log('Uh oh, there was an error: ', error.message)
   });

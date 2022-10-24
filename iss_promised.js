@@ -37,9 +37,9 @@ const fetchISSFlyOverTimes = function(body) {
  */
 const nextISSTimesForMyLocation = function() {
   return fetchMyIp()
-    .then(fetchCoordsByIp)
-    .then(fetchISSFlyOverTimes)
-    .then((data) => {
+    .then(fetchCoordsByIp) // If fetchMyIp returns a body, then pass it into this function
+    .then(fetchISSFlyOverTimes) // If fetchCoordsByIp returns a body, then pass it into this function
+    .then((data) => { // If fetchISSFlyOverTimes returns a body, then pass it into this function as "data" and finally return a parsed version of the flyover times
       const { response } = JSON.parse(data);
       return response;
     });

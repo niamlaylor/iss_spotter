@@ -21,6 +21,9 @@ const fetchMyIp = function(callback) {
   });
 };
 
+/* Takes in an ip and returns coordinates via API request, formatted as an object with two properties: latitude and longitude
+e.g. { latitude: '48.435842', longitude: '-123.4112341' }
+*/
 const fetchCoordsByIp = function(ip, callback) {
   request(`http://ipwho.is/${ip}`, (error, response, body) => {
     if (error) {
@@ -42,6 +45,16 @@ const fetchCoordsByIp = function(ip, callback) {
   });
 };
 
+/* Takes in coordinates (latitude and longitude) via a single API request and returns dates and duration of upcoming ISS pass times, formatted as an array of objects.
+e.g. 
+[
+  { risetime: 1666656877, duration: 356 },
+  { risetime: 1666693277, duration: 543 },
+  { risetime: 1666729677, duration: 639 },
+  { risetime: 1666766077, duration: 180 },
+  { risetime: 1666802477, duration: 495 }
+]
+*/
 const fetchISSFlyOverTimes = function(coordinates, callback) {
   request(`https://iss-flyover.herokuapp.com/json/?lat=${coordinates.latitude}&lon=${coordinates.longitude}`, (error, response, body) => {
     if (error) {
@@ -57,4 +70,25 @@ const fetchISSFlyOverTimes = function(coordinates, callback) {
   });
 };
 
-module.exports = { fetchMyIp, fetchCoordsByIp, fetchISSFlyOverTimes };
+/* Takes in all above functions as callbacks and passes the pass times and durations to the function in index.js to be printed.
+*/
+const nextISSTimesForMyLocation = function(callback) {
+  fetchMyIp((error, ip) => {
+    if (error) {
+      return callback(error, null);
+    }
+    fetchCoordsByIp(ip, (error, coords) => {
+      if (error) {
+        return callback(error, null);
+      }
+      fetchISSFlyOverTimes(coords, (error, times) => {
+        if (error) {
+          return callback(error, null);
+        }
+        return callback(null, times);
+      });
+    });
+  });
+};
+
+module.exports = { nextISSTimesForMyLocation };
